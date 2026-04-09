@@ -1,0 +1,9 @@
+<main>
+    <section>
+        <h2>Home usuario</h2>
+        <p>Bienvenido, {{ auth.curretUser()?.name }}</p>
+        <p>Email {{ auth.curretUser()?.email }}</p>
+        <p>{{auth.isAuthenticated() ? 'Sesión activa' : 'Sesión inactiva'}}</p>
+        <button (click)="logout()">Cerrar Sesión</button>
+    </section>
+</main>

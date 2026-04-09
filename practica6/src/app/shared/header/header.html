@@ -1,0 +1,24 @@
+<mat-toolbar>
+    <span>Sistema</span>
+
+    <span class="spacer"></span>
+
+    <div class="avatar" [matMenuTriggerFor]="userMenu">
+        <span>
+            {{this.auth.curretUser()?.name?.charAt(0)}}
+        </span>
+    </div>
+
+    <mat-menu #userMenu="matMenu" xPosition="before">
+        <button mat-menu-item disabled>
+            <mat-icon>person</mat-icon>
+            <span>{{ this.auth.curretUser()?.name }}</span>
+        </button>
+        <mat-divider></mat-divider>
+        <button mat-menu-item (click)="logout()">
+            <mat-icon>logout</mat-icon>
+            <span>Cerrar sesion</span>
+        </button>
+    </mat-menu>
+
+</mat-toolbar>

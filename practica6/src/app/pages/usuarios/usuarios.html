@@ -1,0 +1,97 @@
+<div class="container">
+  <div class="header">
+    <h2>Gestión de Usuarios</h2>
+        <hr>
+  </div>
+
+  <mat-card class="form-card">
+    <mat-card-header>
+      <mat-card-title>Registrar Nuevo Usuario</mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form [formGroup]="userForm" class="usuario-form" (ngSubmit)="guardar()">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Nombre</mat-label>
+          <input matInput formControlName="nombre" placeholder="Ej. Juan Pérez">
+          @if (userForm.controls.nombre.hasError('required')) {
+            <mat-error>El nombre es requerido</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Email</mat-label>
+          <input matInput formControlName="email" type="email" placeholder="Ej. juan@correo.com">
+          @if (userForm.controls.email.hasError('required')) {
+            <mat-error>El correo es requerido</mat-error>
+          }
+          @if (userForm.controls.email.hasError('email')) {
+            <mat-error>Formato de correo inválido</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Contraseña</mat-label>
+          <input matInput formControlName="password" type="password" placeholder="Tu contraseña">
+          @if (userForm.controls.password.hasError('required')) {
+            <mat-error>La contraseña es requerida</mat-error>
+          }
+          @if (userForm.controls.password.hasError('minlength')) {
+            <mat-error>Mínimo 6 caracteres</mat-error>
+          }
+        </mat-form-field>
+
+        <div class="actions">
+          <button mat-flat-button color="primary" type="submit" [disabled]="userForm.invalid || isLoading()">
+            @if (isLoading()) {
+              <mat-spinner diameter="20" style="margin-right: 8px; display: inline-block; vertical-align: middle;"></mat-spinner> Guardando...
+            } @else {
+              Guardar
+            }
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  <div class="table-container">
+    <table mat-table [dataSource]="usuariosList()" class="mat-elevation-z2 usuarios-table">
+      
+      <!-- Columna Nombre -->
+      <ng-container matColumnDef="nombre">
+        <th mat-header-cell *matHeaderCellDef> Nombre </th>
+        <!-- Buscamos el nombre en todas las posibles key (NAME, nombre, name) -->
+        <td mat-cell *matCellDef="let element"> {{element.NAME || element.nombre || element.name}} </td>
+      </ng-container>
+
+      <!-- Columna Email (similar a 'Raza' o 'Edad' en el ejemplo) -->
+      <ng-container matColumnDef="email">
+        <th mat-header-cell *matHeaderCellDef> Email </th>
+        <td mat-cell *matCellDef="let element"> {{element.email}} </td>
+      </ng-container>
+
+      <!-- Columna Editar -->
+      <ng-container matColumnDef="editar">
+        <th mat-header-cell *matHeaderCellDef> Editar </th>
+        <td mat-cell *matCellDef="let element">
+          <button mat-icon-button class="btn-edit" type="button">
+            <mat-icon>edit</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <!-- Columna Eliminar -->
+      <ng-container matColumnDef="eliminar">
+        <th mat-header-cell *matHeaderCellDef> Eliminar </th>
+        <td mat-cell *matCellDef="let element">
+          <button mat-icon-button color="warn" type="button" (click)="eliminar(element)">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+  </div>
+</div>
