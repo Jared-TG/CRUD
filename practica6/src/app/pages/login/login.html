@@ -25,12 +25,12 @@
                         formControlName="email" />
                 </div>
                 @if (form.get('email')?.touched && form.get('email')?.invalid) {
-                    @if (form.get('email')?.hasError('required')) {
-                        <span style="color: red;">* El correo es requerido</span>
-                    }
-                    @if (form.get('email')?.hasError('email')) {
-                        <span style="color: red;">* Ingresa un correo valido</span>
-                    }
+                @if (form.get('email')?.hasError('required')) {
+                <span style="color: red;">* El correo es requerido</span>
+                }
+                @if (form.get('email')?.hasError('email')) {
+                <span style="color: red;">* Ingresa un correo valido</span>
+                }
                 }
             </div>
 
@@ -38,7 +38,7 @@
                 <label for="password">Contrasena</label>
 
                 <div class="input-wrapper">
-                    <span class="input-icon" aria-hidden="true">    
+                    <span class="input-icon" aria-hidden="true">
                         <svg viewBox="0 0 24 24" fill="none">
                             <rect x="5" y="11" width="14" height="10" rx="2" stroke="currentColor" stroke-width="1.8" />
                             <path d="M8 11V8a4 4 0 0 1 8 0v3" stroke="currentColor" stroke-width="1.8"
@@ -47,12 +47,13 @@
 
                     </span>
 
-                    <input id="password" [type]="showPassword() ? 'text' : 'password'" placeholder="********" autocomplete="current-password"
-                        formControlName="password" />
+                    <input id="password" [type]="showPassword() ? 'text' : 'password'" placeholder="********"
+                        autocomplete="current-password" formControlName="password" />
 
 
 
-                    <button type="button" class="toggle-password" aria-label="Mostrar u ocultar contrasena" (click)="showPassword.set(!showPassword())">
+                    <button type="button" class="toggle-password" aria-label="Mostrar u ocultar contrasena"
+                        (click)="showPassword.set(!showPassword())">
                         <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
                             <path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z" stroke="currentColor"
                                 stroke-width="1.8" />
@@ -61,12 +62,12 @@
                     </button>
                 </div>
                 @if (form.get('password')?.touched && form.get('password')?.invalid) {
-                    @if (form.get('password')?.hasError('required')) {
-                        <span style="color: red;">* La contrasena es requerida</span>
-                    }
-                    @if (form.get('password')?.hasError('minlength')) {
-                        <span style="color: red;">* La contrasena debe tener al menos 6 caracteres</span>
-                    }
+                @if (form.get('password')?.hasError('required')) {
+                <span style="color: red;">* La contrasena es requerida</span>
+                }
+                @if (form.get('password')?.hasError('minlength')) {
+                <span style="color: red;">* La contrasena debe tener al menos 6 caracteres</span>
+                }
                 }
             </div>
 
@@ -80,7 +81,7 @@
 
 
             @if (!this.login_valido()) {
-                <span style="color: red">Correo o contraseña no válidos</span>
+            <span style="color: red">Correo o contraseña no válidos</span>
             }
 
             <button class="submit-btn" type="submit" [disabled]="form.invalid">Iniciar sesion</button>

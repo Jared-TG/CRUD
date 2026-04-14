@@ -1,1 +1,149 @@
-<p>maestros works!</p>
+<div class="container">
+  <div class="header">
+    <h2>Gestión de Maestros</h2>
+    <hr>
+  </div>
+
+  <mat-card class="form-card">
+    <mat-card-header>
+      <mat-card-title>
+        @if (editando()) {
+        Editar Maestro
+        } @else {
+        Nuevo maestro
+        }
+      </mat-card-title>
+    </mat-card-header>
+    <p class="subtitle">Administra la información de los maestros</p>
+
+    <mat-card-content>
+      <form [formGroup]="maestroForm" class="maestro-form" (ngSubmit)="guardar()">
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Nombre</mat-label>
+          <input matInput formControlName="nombre" placeholder="Ej. Juan">
+          @if (maestroForm.controls.nombre.hasError('required')) {
+          <mat-error>El nombre es requerido</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Apellido</mat-label>
+          <input matInput formControlName="apellido" placeholder="Ej. Pérez">
+          @if (maestroForm.controls.apellido.hasError('required')) {
+          <mat-error>El apellido es requerido</mat-error>
+          }
+        </mat-form-field>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Correo electrónico</mat-label>
+            <input matInput formControlName="correo" type="email" placeholder="Ej. juan@correo.com">
+            @if (maestroForm.controls.correo.hasError('required')) {
+            <mat-error>El correo es requerido</mat-error>
+            }
+            @if (maestroForm.controls.correo.hasError('email')) {
+            <mat-error>Formato de correo inválido</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Numero de empleado</mat-label>
+            <input matInput formControlName="numero_empleado" placeholder="Ej. EMP-001">
+            @if (maestroForm.controls.numero_empleado.hasError('required')) {
+            <mat-error>El número de empleado es requerido</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Departamento</mat-label>
+            <input matInput formControlName="departamento" placeholder="Ej. Sistemas">
+            @if (maestroForm.controls.departamento.hasError('required')) {
+            <mat-error>El departamento es requerido</mat-error>
+            }
+          </mat-form-field>
+        </div>
+
+        <div class="actions">
+          <button mat-flat-button color="primary" type="submit" [disabled]="maestroForm.invalid || isLoading()">
+            @if (isLoading()) {
+            <mat-spinner diameter="20"
+              style="margin-right: 8px; display: inline-block; vertical-align: middle;"></mat-spinner> Guardando...
+            } @else if (editando()) {
+            Actualizar
+            } @else {
+            Guardar
+            }
+          </button>
+
+          <button mat-stroked-button type="button" (click)="limpiar()" class="btn-limpiar">
+            Limpiar
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  <div class="table-section">
+    <h3>Maestros registrados</h3>
+    <p class="table-subtitle">Datos obtenidos desde la base de datos</p>
+
+    <div class="table-container">
+      <table mat-table [dataSource]="maestrosList()" class="mat-elevation-z2 maestros-table">
+
+        <!-- Columna Nombre -->
+        <ng-container matColumnDef="nombre">
+          <th mat-header-cell *matHeaderCellDef> Nombre </th>
+          <td mat-cell *matCellDef="let element"> {{element.nombre}} </td>
+        </ng-container>
+
+        <!-- Columna Apellido -->
+        <ng-container matColumnDef="apellido">
+          <th mat-header-cell *matHeaderCellDef> Apellido </th>
+          <td mat-cell *matCellDef="let element"> {{element.apellido}} </td>
+        </ng-container>
+
+        <!-- Columna Correo -->
+        <ng-container matColumnDef="correo">
+          <th mat-header-cell *matHeaderCellDef> Correo </th>
+          <td mat-cell *matCellDef="let element"> {{element.correo}} </td>
+        </ng-container>
+
+        <!-- Columna Número de Empleado -->
+        <ng-container matColumnDef="numero_empleado">
+          <th mat-header-cell *matHeaderCellDef> No. Empleado </th>
+          <td mat-cell *matCellDef="let element"> {{element.numero_empleado}} </td>
+        </ng-container>
+
+        <!-- Columna Departamento -->
+        <ng-container matColumnDef="departamento">
+          <th mat-header-cell *matHeaderCellDef> Departamento </th>
+          <td mat-cell *matCellDef="let element"> {{element.departamento}} </td>
+        </ng-container>
+
+        <!-- Columna Editar -->
+        <ng-container matColumnDef="editar">
+          <th mat-header-cell *matHeaderCellDef> Editar </th>
+          <td mat-cell *matCellDef="let element">
+            <button mat-icon-button class="btn-edit" type="button" (click)="editar(element)">
+              <mat-icon>edit</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <!-- Columna Eliminar -->
+        <ng-container matColumnDef="eliminar">
+          <th mat-header-cell *matHeaderCellDef> Eliminar </th>
+          <td mat-cell *matCellDef="let element">
+            <button mat-icon-button color="warn" type="button" (click)="eliminar(element)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+    </div>
+  </div>
+</div>

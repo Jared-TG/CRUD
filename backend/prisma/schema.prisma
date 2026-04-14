@@ -12,3 +12,12 @@ model users {
   email    String @unique(map: "email") @db.VarChar(150)
   PASSWORD String @db.VarChar(255)
 }
+
+model maestros {
+  id               Int    @id @default(autoincrement())
+  nombre           String @db.VarChar(100)
+  apellido         String @db.VarChar(100)
+  correo           String @unique @db.VarChar(150)
+  numero_empleado  String @unique @db.VarChar(50)
+  departamento     String @db.VarChar(100)
+}
