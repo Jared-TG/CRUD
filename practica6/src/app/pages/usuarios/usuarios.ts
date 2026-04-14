@@ -35,6 +35,8 @@ export class Usuarios implements OnInit {
   // Señales
   usuariosList = signal<seccionUser[]>([]);
   isLoading = signal<boolean>(false);
+  editando = signal<boolean>(false);
+  editandoId = signal<number | null>(null);
 
   displayedColumns: string[] = ['nombre', 'email', 'editar', 'eliminar'];
 
@@ -51,8 +53,6 @@ export class Usuarios implements OnInit {
   cargarUsuarios() {
     this.authService.getUsers().subscribe({
       next: (users) => {
-        // Guardamos directamente los usuarios parseados. 
-        // El HTML usará element.nombre || element.name
         this.usuariosList.set(users);
       },
       error: (err) => {
@@ -63,23 +63,47 @@ export class Usuarios implements OnInit {
   }
 
   guardar() {
-    if (this.userForm.valid) {
-      this.isLoading.set(true);
-      const formValores = this.userForm.getRawValue();
-      
-      // Mapeamos los valores del formulario a lo que espera Prisma en el backend
-      const nuevoUsuario = {
-        NAME: formValores.nombre,
+    if (this.userForm.invalid) return;
+
+    this.isLoading.set(true);
+    const formValores = this.userForm.getRawValue();
+
+    if (this.editando()) {
+      // Modo edición: actualizamos el usuario existente
+      const id = this.editandoId()!;
+      const datosActualizar = {
+        name: formValores.nombre,
         email: formValores.email,
-        PASSWORD: formValores.password
+        password: formValores.password
       };
-      
+
+      this.authService.updateUser(id, datosActualizar).subscribe({
+        next: () => {
+          this.isLoading.set(false);
+          this.snackBar.open('Usuario actualizado con éxito', 'Cerrar', { duration: 3000 });
+          this.cargarUsuarios();
+          this.limpiar();
+        },
+        error: (err) => {
+          this.isLoading.set(false);
+          this.snackBar.open('Error al actualizar usuario', 'Cerrar', { duration: 3000 });
+          console.error(err);
+        }
+      });
+    } else {
+      // Modo creación: registramos un nuevo usuario
+      const nuevoUsuario = {
+        name: formValores.nombre,
+        email: formValores.email,
+        password: formValores.password
+      };
+
       this.authService.register(nuevoUsuario).subscribe({
         next: () => {
           this.isLoading.set(false);
           this.snackBar.open('Usuario registrado con éxito', 'Cerrar', { duration: 3000 });
-          this.cargarUsuarios(); // Recargar la lista desde la BD
-          this.userForm.reset();
+          this.cargarUsuarios();
+          this.limpiar();
         },
         error: (err) => {
           this.isLoading.set(false);
@@ -90,20 +114,47 @@ export class Usuarios implements OnInit {
     }
   }
 
+  editar(usuario: seccionUser) {
+    const nombre = usuario.NAME || usuario.nombre || usuario.name || '';
+    this.userForm.patchValue({
+      nombre: nombre,
+      email: usuario.email,
+      password: '' // El usuario debe ingresar la nueva contraseña
+    });
+    // En modo edición, la contraseña no es obligatoria (opcional cambiarla)
+    this.userForm.controls.password.clearValidators();
+    this.userForm.controls.password.updateValueAndValidity();
+
+    this.editando.set(true);
+    this.editandoId.set(usuario.id);
+  }
+
+  limpiar() {
+    this.userForm.reset();
+    this.editando.set(false);
+    this.editandoId.set(null);
+    // Restaurar validadores del password al limpiar (volver a modo creación)
+    this.userForm.controls.password.setValidators([Validators.required, Validators.minLength(6)]);
+    this.userForm.controls.password.updateValueAndValidity();
+  }
+
   eliminar(usuario: seccionUser) {
     if (!usuario.id) {
       this.snackBar.open('El usuario no tiene ID válido', 'Cerrar', { duration: 3000 });
       return;
     }
 
-    // Leemos el nombre usando las propiedades que podrían venir
     const nombreUsuario = usuario.NAME || usuario.nombre || usuario.name || 'este usuario';
 
     if (confirm(`¿Estás seguro de eliminar a ${nombreUsuario}?`)) {
       this.authService.deleteUser(usuario.id).subscribe({
         next: () => {
           this.snackBar.open('Usuario eliminado', 'Cerrar', { duration: 3000 });
-          this.cargarUsuarios(); // Recargamos la lista
+          this.cargarUsuarios();
+          // Si estábamos editando el usuario eliminado, limpiar el formulario
+          if (this.editandoId() === usuario.id) {
+            this.limpiar();
+          }
         },
         error: (err) => {
           console.error('Error al eliminar:', err);
