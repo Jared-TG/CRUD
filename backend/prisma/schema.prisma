@@ -21,3 +21,13 @@ model maestros {
   numero_empleado  String @unique @db.VarChar(50)
   departamento     String @db.VarChar(100)
 }
+
+model alumnos {
+  id        Int    @id @default(autoincrement())
+  nombre    String @db.VarChar(100)
+  apellido  String @db.VarChar(100)
+  matricula String @unique @db.VarChar(50)
+  carrera   String @db.VarChar(150)
+  semestre  Int
+  correo    String @unique @db.VarChar(150)
+}
